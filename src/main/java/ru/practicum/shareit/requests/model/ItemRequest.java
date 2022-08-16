@@ -1,4 +1,4 @@
-package ru.practicum.shareit.requests.dto;
+package ru.practicum.shareit.requests.model;
 
 import lombok.Data;
 import org.jetbrains.annotations.NotNull;
@@ -8,7 +8,7 @@ import javax.validation.constraints.Positive;
 import java.time.LocalDateTime;
 
 @Data
-public class ItemRequestDto {
+public class ItemRequest {
     @NotNull
     @Positive
     private long id;
