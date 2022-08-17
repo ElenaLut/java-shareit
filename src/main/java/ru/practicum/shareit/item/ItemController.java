@@ -48,7 +48,7 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItems(@RequestParam String text) {
+    public List<ItemDto> searchItemsByDescription(@RequestParam(name = "text") String text) {
         return service.searchItemsByDescription(text)
                 .stream()
                 .map(ItemMapper::toItemDto)

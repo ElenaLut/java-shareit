@@ -2,8 +2,9 @@ package ru.practicum.shareit.user;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
+import ru.practicum.shareit.exception.ConflictingException;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.UserException;
+import ru.practicum.shareit.exception.IncorrectRequestException;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User createUser(User user) {
         checkUniqueEmail(user.getEmail());
+        checkEmail(user);
         user.setId(generatorUserId.generate());
         users.put(user.getId(), user);
         log.debug("Создан пользователь с id {}.", user.getId());
@@ -29,9 +31,9 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User updateUser(Long userId, User updateUser) {
-        checkUserId(updateUser.getId());
+        checkUserId(userId);
         User user = getUserById(userId);
-        if (updateUser.getEmail() != null) {
+        if (updateUser.getEmail() != null & user.getEmail().contains("@")) {
             checkUniqueEmail(updateUser.getEmail());
             user.setEmail(updateUser.getEmail());
         }
@@ -68,7 +70,7 @@ public class UserRepositoryImpl implements UserRepository {
         for (User user : users.values()) {
             if (user.getEmail().equals(email)) {
                 log.warn("Электронный адрес {} уже существует", user.getEmail());
-                throw new UserException("Пользователь с указанной электронной почтой уже создан.");
+                throw new ConflictingException("Пользователь с указанной электронной почтой уже создан.");
             }
         }
     }
@@ -77,6 +79,13 @@ public class UserRepositoryImpl implements UserRepository {
         if (getUserById(id) == null) {
             log.warn("Пользователя с id {} не существует", id);
             throw new NotFoundException("Пользователь не существует");
+        }
+    }
+
+    private void checkEmail(User user) {
+        if (user.getEmail() == null || !user.getEmail().contains("@")) {
+            log.error("Электронная почта не может быть пустой и должна содержать символ @, текущая: {}", user.getEmail());
+            throw new IncorrectRequestException("электронная почта не может быть пустой и должна содержать символ @");
         }
     }
 }

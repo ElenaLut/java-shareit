@@ -3,15 +3,12 @@ package ru.practicum.shareit.item;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import ru.practicum.shareit.exception.IncorrectRequestException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserService;
 
-import javax.validation.ValidationException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -30,12 +27,17 @@ public class ItemRepositoryImpl implements ItemRepository {
     @Override
     public Item createItem(Item item, Long userId) {
         checkUserId(userId);
+        if (item.getAvailable() == null || item.getDescription() == null || item.getName() == null ||
+                item.getName().isBlank()) {
+            throw new IncorrectRequestException("У предмета не указан статус");
+        }
         item.setId(generatorItemId.generate());
         item.setOwnerId(userId);
         if (!items.containsKey(userId)) {
             List<Item> newItemsOfUser = new ArrayList<>();
             newItemsOfUser.add(item);
             items.put(userId, newItemsOfUser);
+            return item;
         }
         List<Item> itemsOfUser = items.get(userId);
         itemsOfUser.add(item);
@@ -50,7 +52,7 @@ public class ItemRepositoryImpl implements ItemRepository {
         Item oldItem = getItemById(itemId);
         if (oldItem.getOwnerId() != userId) {
             log.warn("Пользователь с id {} не может изменять вещь с id {}", userId, itemId);
-            throw new ValidationException("Пользователю недоступно редактирование вещи с id" + itemId);
+            throw new NotFoundException("Пользователю недоступно редактирование вещи с id" + itemId);
         }
         if (item.getName() != null) {
             oldItem.setName(item.getName());
