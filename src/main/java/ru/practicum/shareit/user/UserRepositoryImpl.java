@@ -33,7 +33,7 @@ public class UserRepositoryImpl implements UserRepository {
     public User updateUser(Long userId, User updateUser) {
         checkUserId(userId);
         User user = getUserById(userId);
-        if (updateUser.getEmail() != null & user.getEmail().contains("@")) {
+        if (updateUser.getEmail() != null && user.getEmail().contains("@")) {
             checkUniqueEmail(updateUser.getEmail());
             user.setEmail(updateUser.getEmail());
         }
