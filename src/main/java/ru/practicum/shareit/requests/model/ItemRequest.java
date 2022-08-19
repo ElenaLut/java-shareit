@@ -9,18 +9,9 @@ import java.time.LocalDateTime;
 
 @Data
 public class ItemRequest {
-    @NotNull
-    @Positive
+
     private long id;
-
-    @NotNull
-    @NotBlank
     private String description;
-
-    @NotNull
-    @Positive
     private long requester;
-
-    @NotNull
     private LocalDateTime created;
 }

@@ -10,24 +10,11 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 public class Booking {
-    @NotNull
-    @Positive
+
     private long id;
-
-    @NotNull
     private LocalDateTime start;
-
-    @NotNull
     private LocalDateTime end;
-
-    @NotNull
-    @Positive
     private long item;
-
-    @NotNull
-    @Positive
     private long booker;
-
-    @NotNull
     private Status status;
 }

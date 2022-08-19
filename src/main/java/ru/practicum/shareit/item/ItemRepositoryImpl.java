@@ -17,11 +17,12 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     private final Map<Long, List<Item>> items = new HashMap<>();
     private final UserService userService;
-    private GeneratorItemId generatorItemId = new GeneratorItemId();
+    private GeneratorItemId generatorItemId;
 
     @Autowired
-    public ItemRepositoryImpl(UserService userService) {
+    public ItemRepositoryImpl(UserService userService, GeneratorItemId generatorItemId) {
         this.userService = userService;
+        this.generatorItemId = generatorItemId;
     }
 
     @Override

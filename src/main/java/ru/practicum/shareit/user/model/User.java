@@ -10,14 +10,8 @@ import javax.validation.constraints.NotNull;
 @Data
 @AllArgsConstructor
 public class User {
-    @NotNull
+
     private long id;
-
-    @NotNull
-    @NotBlank
     private String name;
-
-    @NotNull
-    @Email
     private String email;
 }

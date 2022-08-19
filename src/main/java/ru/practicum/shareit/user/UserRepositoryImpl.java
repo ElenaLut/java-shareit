@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exception.ConflictingException;
 import ru.practicum.shareit.exception.NotFoundException;
@@ -17,7 +18,12 @@ import java.util.Map;
 public class UserRepositoryImpl implements UserRepository {
 
     private final Map<Long, User> users = new HashMap<>();
-    private GeneratorUserId generatorUserId = new GeneratorUserId();
+    private GeneratorUserId generatorUserId;
+
+    @Autowired
+    public UserRepositoryImpl(GeneratorUserId generatorUserId) {
+        this.generatorUserId = generatorUserId;
+    }
 
     @Override
     public User createUser(User user) {
