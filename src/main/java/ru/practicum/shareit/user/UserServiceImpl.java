@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User updateUser(Long userId, User updateUser) {
         User user = getUserById(userId);
-        if (updateUser.getEmail() != null & user.getEmail().contains("@")) {
+        if (updateUser.getEmail() != null && user.getEmail().contains("@")) {
             user.setEmail(updateUser.getEmail());
         }
         if (updateUser.getName() != null) {

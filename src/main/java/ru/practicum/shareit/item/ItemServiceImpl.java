@@ -42,8 +42,8 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public Item createItem(Item item, Long userId) {
-        if (item.getAvailable() == null | item.getName() == null | item.getDescription() == null
-                | item.getName().isBlank()) {
+        if (item.getAvailable() == null || item.getName() == null || item.getDescription() == null
+                || item.getName().isBlank()) {
             log.error("Не заполнены обязательные поля");
             throw new IncorrectRequestException("Не заполнены обязательные поля");
         }
@@ -133,7 +133,7 @@ public class ItemServiceImpl implements ItemService {
             log.error("Бронирование не найдено");
             throw new IncorrectRequestException("Бронирование не найдено");
         }
-        if (comment.getText().isBlank() | comment.getText().isEmpty()) {
+        if (comment.getText().isBlank() || comment.getText().isEmpty()) {
             log.error("Переданный комментарий пуст");
             throw new IncorrectRequestException("Комментарий пуст");
         }

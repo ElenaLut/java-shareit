@@ -46,8 +46,8 @@ public class BookingServiceImpl implements BookingService {
             log.error("Вещь с id {} недоступна", itemId);
             throw new IncorrectRequestException("Вещь недоступна");
         }
-        if (booking.getStart().isBefore(LocalDateTime.now()) | booking.getEnd().isBefore(booking.getStart())
-                | booking.getEnd().isBefore(LocalDateTime.now())) {
+        if (booking.getStart().isBefore(LocalDateTime.now()) || booking.getEnd().isBefore(booking.getStart())
+                || booking.getEnd().isBefore(LocalDateTime.now())) {
             log.error("В указанный период вещь недоступна");
             throw new IncorrectRequestException("Вещь недоступна");
         }
@@ -66,7 +66,7 @@ public class BookingServiceImpl implements BookingService {
             log.error("Пользователь с id {} не является владельцем вещи с id {}", userId, item.getId());
             throw new NotFoundException("Только владелец вещи может изменять статус бронирвоания");
         }
-        if (booking.getStatus().equals(Status.APPROVED) | booking.getStatus().equals(Status.REJECTED)) {
+        if (booking.getStatus().equals(Status.APPROVED) || booking.getStatus().equals(Status.REJECTED)) {
             log.error("Бронирование с id {} уже обработано", bookingId);
             throw new IncorrectRequestException("Статус бронирвоание уже был изменен");
         }
@@ -86,7 +86,7 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() ->
                         new NotFoundException("Не найдено бронирование с id " + bookingId));
-        if (booking.getBooker().getId() != userId & booking.getItem().getOwner().getId() != userId) {
+        if (booking.getBooker().getId() != userId && booking.getItem().getOwner().getId() != userId) {
             log.error("Информация о бронированировании не доступна пользователю с id {} ", userId);
             throw new NotFoundException("Информация о бронировании доступна только автору бронирвоания или владельцу вещи");
         }
