@@ -44,8 +44,8 @@ public class ItemServiceImpl implements ItemService {
     public Item createItem(Item item, Long userId) {
         if (item.getAvailable() == null || item.getName() == null || item.getDescription() == null
                 || item.getName().isBlank()) {
-            log.error("Не заполнены обязательные поля");
-            throw new IncorrectRequestException("Не заполнены обязательные поля");
+            log.error("Не заполнены обязательные поля: название вещи, описание, доступность");
+            throw new IncorrectRequestException("Не заполнены обязательные поля: название вещи, описание, доступность");
         }
         item.setOwner(userService.getUserById(userId));
         log.debug("Пользователь с id {} добавил вещь {}", userId, item.getName());
@@ -58,7 +58,7 @@ public class ItemServiceImpl implements ItemService {
         Item oldItem = getItemById(item.getId());
         if (oldItem.getOwner().getId() != userId) {
             log.error("Пользователь с id {} не может редактировать вещь с id {}", userId, item.getId());
-            throw new NotFoundException("Пользователю недоступно редактирование вещи с id" + item.getId());
+            throw new NotFoundException("Только владелец вещи может вносить изменение в ее описание");
         }
         if (item.getName() != null) {
             oldItem.setName(item.getName());
@@ -140,7 +140,7 @@ public class ItemServiceImpl implements ItemService {
         comment.setItem(itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Не найдена вещь с идентификатором № " + itemId)));
         comment.setAuthor(userService.getUserById(userId));
-        comment.setCreat(LocalDateTime.now());
+        comment.setCreated(LocalDateTime.now());
         log.info("Сохранен комментарий {} для вещи с id {}.", comment, itemId);
         return commentRepository.save(comment);
     }

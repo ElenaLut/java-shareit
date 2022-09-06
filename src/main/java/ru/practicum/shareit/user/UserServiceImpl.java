@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
     public User createUser(User user) {
         if (user.getEmail() == null || user.getName() == null || !user.getEmail().contains("@") || user.getEmail().isBlank()) {
             log.error("Не заполнены поля для создания пользователя");
-            throw new IncorrectRequestException("Не заполнены обязательные поля.");
+            throw new IncorrectRequestException("Не заполнены обязательные поля: имя, e-mail.");
         }
         try {
             return userRepository.save(user);

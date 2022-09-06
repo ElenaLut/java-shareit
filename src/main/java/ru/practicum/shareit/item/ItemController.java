@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/items")
 public class ItemController {
 
-    private static final String USER_ID_IN_HEADER = "X-Sharer-User-Id";
+    private static final String USER_IN_HEADER = "X-Sharer-User-Id";
 
     private final ItemService service;
 
@@ -26,14 +26,14 @@ public class ItemController {
 
     @PostMapping
     public ItemDto createItem(@RequestBody ItemDto itemDto,
-                              @RequestHeader(name = USER_ID_IN_HEADER) Long userId) {
+                              @RequestHeader(name = USER_IN_HEADER) Long userId) {
         Item item = ItemMapper.toItem(itemDto);
         return ItemMapper.toItemDto(service.createItem(item, userId));
     }
 
     @PatchMapping("/{itemId}")
     public ItemDto updateItem(@PathVariable Long itemId,
-                              @RequestHeader(name = USER_ID_IN_HEADER) Long userId,
+                              @RequestHeader(name = USER_IN_HEADER) Long userId,
                               @RequestBody ItemDto itemDto) {
         itemDto.setId(itemId);
         Item newItem = ItemMapper.toItem(itemDto);
@@ -41,13 +41,13 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getItemById(@RequestHeader(USER_ID_IN_HEADER) Long userId,
+    public ItemDto getItemById(@RequestHeader(USER_IN_HEADER) Long userId,
                                @PathVariable("itemId") Long itemId) {
         return service.getItemDtoById(itemId, userId);
     }
 
     @GetMapping
-    public List<ItemDto> getAllItemsByUser(@RequestHeader(USER_ID_IN_HEADER) Long userId) {
+    public List<ItemDto> getAllItemsByUser(@RequestHeader(USER_IN_HEADER) Long userId) {
         return service.getAllItemsDtoByUser(userId);
     }
 
@@ -61,7 +61,7 @@ public class ItemController {
 
     @PostMapping("/{itemId}/comment")
     public CommentDto saveComment(@RequestBody CommentDto commentDto,
-                                  @RequestHeader(name = USER_ID_IN_HEADER) Long userId,
+                                  @RequestHeader(name = USER_IN_HEADER) Long userId,
                                   @PathVariable Long itemId) {
         Comment comment = CommentMapper.toComment(commentDto);
         return CommentMapper.toCommentDto(service.addComment(userId, itemId, comment));

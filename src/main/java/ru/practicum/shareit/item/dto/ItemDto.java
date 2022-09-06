@@ -36,29 +36,11 @@ public class ItemDto {
     private Boolean available;
 
     @JsonIgnore
-    private UserDto owner;
+    private UserForItemDto owner;
     private Long requestId;
-    private BookingDto lastBooking;
-    private BookingDto nextBooking;
+    private BookingForItemDto lastBooking;
+    private BookingForItemDto nextBooking;
     private List<CommentDto> comments;
-
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class UserDto {
-        Long id;
-        String name;
-    }
-
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    static class BookingDto {
-        Long id;
-        Long bookerId;
-        LocalDateTime start;
-        LocalDateTime end;
-    }
 
     public void setComments(List<CommentDto> comments) {
         this.comments = comments;
@@ -66,7 +48,7 @@ public class ItemDto {
 
     public void setLastBooking(Optional<Booking> booking) {
         if (booking.isPresent()) {
-            this.lastBooking = new BookingDto(
+            this.lastBooking = new BookingForItemDto(
                     booking.get().getId(),
                     booking.get().getBooker().getId(),
                     booking.get().getStart(),
@@ -77,7 +59,7 @@ public class ItemDto {
 
     public void setNextBooking(Optional<Booking> booking) {
         if (booking.isPresent()) {
-            this.nextBooking = new BookingDto(
+            this.nextBooking = new BookingForItemDto(
                     booking.get().getId(),
                     booking.get().getBooker().getId(),
                     booking.get().getStart(),

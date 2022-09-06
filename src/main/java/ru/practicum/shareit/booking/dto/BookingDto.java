@@ -20,7 +20,7 @@ public class BookingDto {
 
     @NotNull
     private LocalDateTime end;
-    private final Item item;
+    private final ItemForBookingDto item;
 
     @NotNull
     @Positive
@@ -28,21 +28,8 @@ public class BookingDto {
 
     @NotNull
     @Positive
-    private Booker booker;
+    private BookerForBookingDto booker;
 
     @NotNull
     private Status status;
-
-    @Data
-    @Builder
-    public static class Item {
-        private Long id;
-        private String name;
-    }
-
-    @Data
-    @Builder
-    public static class Booker {
-        private Long id;
-    }
 }

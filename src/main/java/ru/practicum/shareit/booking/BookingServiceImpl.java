@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.model.Status;
+import ru.practicum.shareit.exception.BookingException;
 import ru.practicum.shareit.exception.IncorrectRequestException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemService;
@@ -34,13 +35,13 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Booking createBooking(Booking booking, Long userId, Long itemId) {
         User user = userService.getUserById(userId);
-        if (itemId == 0) {
-            throw new IncorrectRequestException("Некорректнвй запрос");
+        if (itemId <= 0) {
+            throw new IncorrectRequestException("Идентификатор вещи не может быть меньше или равен нулю. Id вещи " + itemId);
         }
         Item item = itemService.getItemById(itemId);
         if (item.getOwner().getId() == userId) {
             log.error("Владелец вещи не может забронировать ее");
-            throw new NotFoundException("Ошибка бронирования: владелец не модет забронировать свою вещь");
+            throw new BookingException("Ошибка бронирования: владелец не модет забронировать свою вещь");
         }
         if (!item.getAvailable()) {
             log.error("Вещь с id {} недоступна", itemId);
@@ -49,7 +50,7 @@ public class BookingServiceImpl implements BookingService {
         if (booking.getStart().isBefore(LocalDateTime.now()) || booking.getEnd().isBefore(booking.getStart())
                 || booking.getEnd().isBefore(LocalDateTime.now())) {
             log.error("В указанный период вещь недоступна");
-            throw new IncorrectRequestException("Вещь недоступна");
+            throw new IncorrectRequestException("Некорректные даты бронирования");
         }
         booking.setItem(item);
         booking.setBooker(user);
@@ -64,7 +65,7 @@ public class BookingServiceImpl implements BookingService {
         Item item = itemService.getItemById(booking.getItem().getId());
         if (userId != item.getOwner().getId()) {
             log.error("Пользователь с id {} не является владельцем вещи с id {}", userId, item.getId());
-            throw new NotFoundException("Только владелец вещи может изменять статус бронирвоания");
+            throw new BookingException("Только владелец вещи может изменять статус бронирвоания");
         }
         if (booking.getStatus().equals(Status.APPROVED) || booking.getStatus().equals(Status.REJECTED)) {
             log.error("Бронирование с id {} уже обработано", bookingId);
@@ -88,7 +89,7 @@ public class BookingServiceImpl implements BookingService {
                         new NotFoundException("Не найдено бронирование с id " + bookingId));
         if (booking.getBooker().getId() != userId && booking.getItem().getOwner().getId() != userId) {
             log.error("Информация о бронированировании не доступна пользователю с id {} ", userId);
-            throw new NotFoundException("Информация о бронировании доступна только автору бронирвоания или владельцу вещи");
+            throw new BookingException("Информация о бронировании доступна только автору бронирвоания или владельцу вещи");
         }
         log.info("Бронирование с id {} получено", bookingId);
         return booking;
