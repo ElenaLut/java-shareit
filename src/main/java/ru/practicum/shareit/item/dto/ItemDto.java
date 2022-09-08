@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.booking.dto.CommentDto;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.user.model.User;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -35,10 +36,10 @@ public class ItemDto {
     private Boolean available;
 
     @JsonIgnore
-    private UserForItemDto owner;
+    private User owner;
     private Long requestId;
-    private BookingForItemDto lastBooking;
-    private BookingForItemDto nextBooking;
+    private BookingShortDto lastBooking;
+    private BookingShortDto nextBooking;
     private List<CommentDto> comments;
 
     public void setComments(List<CommentDto> comments) {
@@ -47,7 +48,7 @@ public class ItemDto {
 
     public void setLastBooking(Optional<Booking> booking) {
         if (booking.isPresent()) {
-            this.lastBooking = new BookingForItemDto(
+            this.lastBooking = new BookingShortDto(
                     booking.get().getId(),
                     booking.get().getBooker().getId(),
                     booking.get().getStart(),
@@ -58,7 +59,7 @@ public class ItemDto {
 
     public void setNextBooking(Optional<Booking> booking) {
         if (booking.isPresent()) {
-            this.nextBooking = new BookingForItemDto(
+            this.nextBooking = new BookingShortDto(
                     booking.get().getId(),
                     booking.get().getBooker().getId(),
                     booking.get().getStart(),

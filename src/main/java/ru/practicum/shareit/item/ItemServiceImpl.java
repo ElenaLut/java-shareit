@@ -84,7 +84,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto getItemDtoById(Long itemId, Long userId) {
         Item item = getItemById(itemId);
         ItemDto itemDto = ItemMapper.toItemDto(item);
-        if (itemDto.getOwner().getId().equals(userId)) {
+        if (itemDto.getOwner().getId() == userId) {
             getAllBookings(itemDto);
         }
         getCommentsByItemDto(itemDto);
@@ -140,7 +140,7 @@ public class ItemServiceImpl implements ItemService {
         comment.setItem(itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Не найдена вещь с идентификатором № " + itemId)));
         comment.setAuthor(userService.getUserById(userId));
-        comment.setCreated(LocalDateTime.now());
+        comment.setCreatedAt(LocalDateTime.now());
         log.info("Сохранен комментарий {} для вещи с id {}.", comment, itemId);
         return commentRepository.save(comment);
     }

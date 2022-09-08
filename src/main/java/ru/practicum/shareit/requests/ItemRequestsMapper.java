@@ -10,7 +10,7 @@ public class ItemRequestsMapper {
                 .id(itemRequest.getId())
                 .description(itemRequest.getDescription())
                 .requester(itemRequest.getRequester().getId())
-                .created(itemRequest.getCreated())
+                .createdAt(itemRequest.getCreatedAt())
                 .build();
     }
 
@@ -19,7 +19,7 @@ public class ItemRequestsMapper {
                 .id(itemRequestDto.getId())
                 .description(itemRequestDto.getDescription())
                 .requester(null)
-                .created(itemRequestDto.getCreated())
+                .createdAt(itemRequestDto.getCreatedAt())
                 .build();
     }
 }

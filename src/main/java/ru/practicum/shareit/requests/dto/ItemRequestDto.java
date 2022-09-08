@@ -24,5 +24,5 @@ public class ItemRequestDto {
     private long requester;
 
     @NotNull
-    private LocalDateTime created;
+    private LocalDateTime createdAt;
 }

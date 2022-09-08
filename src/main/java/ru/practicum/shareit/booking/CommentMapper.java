@@ -10,14 +10,14 @@ public class CommentMapper {
                 .id(comment.getId())
                 .text(comment.getText())
                 .authorName(comment.getAuthor().getName())
-                .creatAt(comment.getCreated())
+                .createdAt(comment.getCreatedAt())
                 .build();
     }
 
     public static Comment toComment(CommentDto commentDto) {
         return Comment.builder()
                 .text(commentDto.getText())
-                .created(commentDto.getCreatAt())
+                .createdAt(commentDto.getCreatedAt())
                 .build();
     }
 }
