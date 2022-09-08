@@ -1,11 +1,18 @@
 package ru.practicum.shareit.user;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.ConflictingException;
+import ru.practicum.shareit.exception.IncorrectRequestException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.model.User;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -17,27 +24,53 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public User createUser(User user) {
-        return userRepository.createUser(user);
+        if (user.getEmail() == null || user.getName() == null || !user.getEmail().contains("@") || user.getEmail().isBlank()) {
+            log.error("Не заполнены поля для создания пользователя");
+            throw new IncorrectRequestException("Не заполнены обязательные поля: имя, e-mail.");
+        }
+        try {
+            return userRepository.save(user);
+        } catch (DataIntegrityViolationException e) {
+            log.error("Адрес почты {} уже используется", user.getEmail());
+            throw new ConflictingException("Адрес электронной почты уже используется другим пользователем.");
+        }
     }
 
     @Override
+    @Transactional
     public User updateUser(Long userId, User updateUser) {
-        return userRepository.updateUser(userId, updateUser);
+        User user = getUserById(userId);
+        if (updateUser.getEmail() != null && user.getEmail().contains("@")) {
+            user.setEmail(updateUser.getEmail());
+        }
+        if (updateUser.getName() != null) {
+            user.setName(updateUser.getName());
+        }
+        return userRepository.save(user);
     }
 
     @Override
+    @Transactional
     public void deleteUser(Long userId) {
-        userRepository.deleteUser(userId);
+        userRepository.deleteById(userId);
     }
 
     @Override
     public User getUserById(Long userId) {
-        return userRepository.getUserById(userId);
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Не найден пользователь с id " + userId));
     }
 
     @Override
     public List<User> getAllUsers() {
-        return userRepository.getAllUsers();
+        return userRepository.findAll();
+    }
+
+    @Override
+    public void checkIfUserExists(Long userId) {
+        if (!userRepository.existsById(userId))
+            throw new NotFoundException("Не найден пользователь с id " + userId);
     }
 }

@@ -2,6 +2,9 @@ package ru.practicum.shareit.item;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.booking.CommentMapper;
+import ru.practicum.shareit.booking.dto.CommentDto;
+import ru.practicum.shareit.booking.model.Comment;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
@@ -12,7 +15,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/items")
 public class ItemController {
 
-    private static final String USER_ID_IN_HEADER = "X-Sharer-User-Id";
+    private static final String USER_IN_HEADER = "X-Sharer-User-Id";
 
     private final ItemService service;
 
@@ -23,30 +26,29 @@ public class ItemController {
 
     @PostMapping
     public ItemDto createItem(@RequestBody ItemDto itemDto,
-                              @RequestHeader(name = USER_ID_IN_HEADER) Long userId) {
+                              @RequestHeader(name = USER_IN_HEADER) Long userId) {
         Item item = ItemMapper.toItem(itemDto);
         return ItemMapper.toItemDto(service.createItem(item, userId));
     }
 
     @PatchMapping("/{itemId}")
     public ItemDto updateItem(@PathVariable Long itemId,
-                              @RequestHeader(name = USER_ID_IN_HEADER) Long userId,
+                              @RequestHeader(name = USER_IN_HEADER) Long userId,
                               @RequestBody ItemDto itemDto) {
+        itemDto.setId(itemId);
         Item newItem = ItemMapper.toItem(itemDto);
-        return ItemMapper.toItemDto(service.updateItem(newItem, userId, itemId));
+        return ItemMapper.toItemDto(service.updateItem(newItem, userId));
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getItemById(@PathVariable("itemId") Long itemId) {
-        return ItemMapper.toItemDto(service.getItemById(itemId));
+    public ItemDto getItemById(@RequestHeader(USER_IN_HEADER) Long userId,
+                               @PathVariable("itemId") Long itemId) {
+        return service.getItemDtoById(itemId, userId);
     }
 
     @GetMapping
-    public List<ItemDto> getAllItemsByUser(@RequestHeader(USER_ID_IN_HEADER) Long userId) {
-        return service.getAllItemsByUser(userId)
-                .stream()
-                .map(ItemMapper::toItemDto)
-                .collect(Collectors.toList());
+    public List<ItemDto> getAllItemsByUser(@RequestHeader(USER_IN_HEADER) Long userId) {
+        return service.getAllItemsDtoByUser(userId);
     }
 
     @GetMapping("/search")
@@ -55,5 +57,13 @@ public class ItemController {
                 .stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto saveComment(@RequestBody CommentDto commentDto,
+                                  @RequestHeader(name = USER_IN_HEADER) Long userId,
+                                  @PathVariable Long itemId) {
+        Comment comment = CommentMapper.toComment(commentDto);
+        return CommentMapper.toCommentDto(service.addComment(userId, itemId, comment));
     }
 }
