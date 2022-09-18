@@ -17,7 +17,7 @@ public interface ItemService {
 
     List<Comment> getCommentsByItem(Long itemId);
 
-    List<ItemDto> getAllItemsDtoByUser(int fromLine, int size, Long userId) ;
+    List<ItemDto> getAllItemsDtoByUser(int fromLine, int size, Long userId);
 
     List<ItemDto> searchItemsByDescription(int fromLine, int size, String text);
 
