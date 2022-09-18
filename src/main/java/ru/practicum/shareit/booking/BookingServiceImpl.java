@@ -2,6 +2,9 @@ package ru.practicum.shareit.booking;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.State;
@@ -96,64 +99,72 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<Booking> getAllBookingsByUserId(Long userId, String state) {
+    public List<Booking> getAllBookingsByUserId(int fromLine, int size, Long userId, String state) {
+        if (fromLine < 0) {
+            throw new IncorrectRequestException("Значение page не может быть меньше 0");
+        }
         userService.checkIfUserExists(userId);
         List<Booking> bookingsOfUser = new ArrayList<>();
         State bookingState;
+        Pageable pageable = PageRequest.of(fromLine / size, size, Sort.by(Sort.Direction.DESC, "end"));
         try {
             bookingState = State.valueOf(state);
         } catch (IllegalArgumentException e) {
             throw new IncorrectRequestException("Unknown state: UNSUPPORTED_STATUS");
         }
         if (bookingState.equals(State.CURRENT)) {
-            bookingsOfUser = bookingRepository.getBookingsByBookerIdInTime(userId, LocalDateTime.now());
+            bookingsOfUser = bookingRepository.getBookingsByBookerIdInTime(userId, LocalDateTime.now(), pageable);
             log.info("Пользователю с id {} передан список его текущих бронирований", userId);
         } else if (bookingState.equals(State.FUTURE)) {
-            bookingsOfUser = bookingRepository.getBookingsByBookerIdAfter(userId, LocalDateTime.now());
+            bookingsOfUser = bookingRepository.getBookingsByBookerIdAfter(userId, LocalDateTime.now(), pageable);
             log.info("Пользователю с id {} передан список его будущих бронирований", userId);
         } else if (bookingState.equals(State.PAST)) {
-            bookingsOfUser = bookingRepository.getBookingsByBookerIdBefore(userId, LocalDateTime.now());
+            bookingsOfUser = bookingRepository.getBookingsByBookerIdBefore(userId, LocalDateTime.now(), pageable);
             log.info("Пользователю с id {} передан список его прошлых бронирований", userId);
         } else if (bookingState.equals(State.ALL)) {
-            bookingsOfUser = bookingRepository.getBookingsByBookerId(userId);
+            bookingsOfUser = bookingRepository.getBookingsByBookerId(userId, pageable);
             log.info("Пользователю с id {} передан список всех его бронирований", userId);
         } else if (bookingState.equals(State.REJECTED)) {
-            bookingsOfUser = bookingRepository.getBookingsByBookerIdAndStatus(userId, Status.REJECTED);
+            bookingsOfUser = bookingRepository.getBookingsByBookerIdAndStatus(userId, Status.REJECTED, pageable);
             log.info("Пользователю с id {} передан список бронирований со статусом - отклонен", userId);
         } else if (bookingState.equals(State.WAITING)) {
-            bookingsOfUser = bookingRepository.getBookingsByBookerIdAndStatus(userId, Status.WAITING);
+            bookingsOfUser = bookingRepository.getBookingsByBookerIdAndStatus(userId, Status.WAITING, pageable);
             log.info("Пользователю с id {} передан список бронирований со статусом - в ожидании", userId);
         }
         return bookingsOfUser;
     }
 
     @Override
-    public List<Booking> getAllBookingsByOwnerId(Long userId, String state) {
+    public List<Booking> getAllBookingsByOwnerId(int fromLine, int size, Long userId, String state) {
+        if (fromLine < 0) {
+            throw new IncorrectRequestException("Значение page не может быть меньше 0");
+        }
         userService.checkIfUserExists(userId);
         List<Booking> bookingsOfOwner = new ArrayList<>();
         State bookingState;
+        Pageable pageable = PageRequest.of(fromLine / size, size, Sort.by(Sort.Direction.DESC, "end"));
         try {
             bookingState = State.valueOf(state);
         } catch (IllegalArgumentException e) {
             throw new IncorrectRequestException("Unknown state: UNSUPPORTED_STATUS");
         }
         if (bookingState.equals(State.CURRENT)) {
-            bookingsOfOwner = bookingRepository.getBookingsByOwnerIdInTime(userId, LocalDateTime.now());
+            bookingsOfOwner = bookingRepository.getBookingsByOwnerIdInTime(userId, LocalDateTime.now(), pageable);
             log.info("Пользователю с id {} передан список текущих бронирований его вещей", userId);
         } else if (bookingState.equals(State.FUTURE)) {
-            bookingsOfOwner = bookingRepository.getBookingsByOwnerIdAfter(userId, LocalDateTime.now());
+            bookingsOfOwner = bookingRepository.getBookingsByOwnerIdAfter(userId, LocalDateTime.now(), pageable);
             log.info("Пользователю с id {} передан список будущих бронирований его вещей", userId);
         } else if (bookingState.equals(State.PAST)) {
-            bookingsOfOwner = bookingRepository.getBookingsByOwnerIdBefore(userId, LocalDateTime.now());
+            bookingsOfOwner = bookingRepository.getBookingsByOwnerIdBefore(userId, LocalDateTime.now(), pageable);
             log.info("Пользователю с id {} передан список прошлых бронирований его вещей", userId);
         } else if (bookingState.equals(State.ALL)) {
-            bookingsOfOwner = bookingRepository.getBookingsByOwner(userId);
+            bookingsOfOwner = bookingRepository.getBookingsByOwner(userId, pageable);
             log.info("Пользователю с id {} передан список всех бронирований его вещей", userId);
         } else if (bookingState.equals(State.REJECTED)) {
-            bookingsOfOwner = bookingRepository.getBookingsByOwnerIdAndStatus(userId, Status.REJECTED);
+            bookingsOfOwner = bookingRepository.getBookingsByOwnerIdAndStatus(userId, Status.REJECTED, pageable);
             log.info("Пользователю с id {} передан список бронирований со статусом - отклонен", userId);
         } else if (bookingState.equals(State.WAITING)) {
-            bookingsOfOwner = bookingRepository.getBookingsByOwnerIdAndStatus(userId, Status.WAITING);
+            bookingsOfOwner = bookingRepository.getBookingsByOwnerIdAndStatus(userId, Status.WAITING, pageable);
             log.info("Пользователю с id {} передан список бронирований со статусом - в ожидании", userId);
         }
         return bookingsOfOwner;

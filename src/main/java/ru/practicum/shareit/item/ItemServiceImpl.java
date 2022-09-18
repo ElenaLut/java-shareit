@@ -2,6 +2,9 @@ package ru.practicum.shareit.item;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.CommentMapper;
@@ -17,7 +20,6 @@ import ru.practicum.shareit.user.UserService;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -99,15 +101,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<Item> getAllItemsByUser(Long userId) {
-        List<Item> itemsOfUser = itemRepository.findAllByOwnerId(userId);
-        itemsOfUser.sort(Comparator.comparing(Item::getId));
-        return itemsOfUser;
-    }
-
-    @Override
-    public List<ItemDto> getAllItemsDtoByUser(Long userId) {
-        List<ItemDto> itemList = getAllItemsByUser(userId)
+    public List<ItemDto> getAllItemsDtoByUser(int fromLine, int size, Long userId) {
+        Pageable pageable = PageRequest.of(fromLine / size, size, Sort.by(Sort.Direction.ASC, "id"));
+        List<ItemDto> itemList = itemRepository.findAllByOwnerId(userId, pageable)
                 .stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
@@ -118,11 +114,15 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<Item> searchItemsByDescription(String text) {
+    public List<ItemDto> searchItemsByDescription(int fromLine, int size, String text) {
         if (text.isBlank()) {
             return Collections.emptyList();
         }
-        return itemRepository.searchItemsByTextInNameAndDescription(text);
+        Pageable pageable = PageRequest.of(fromLine / size, size);
+        return itemRepository.searchItemsByTextInNameAndDescription(text, pageable)
+                .stream()
+                .map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 
     @Override

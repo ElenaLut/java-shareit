@@ -19,7 +19,6 @@ CREATE TABLE IF NOT EXISTS item_requests
     description  VARCHAR(4000)                           NOT NULL,
     requester_id BIGINT,
     created_at      TIMESTAMP WITHOUT TIME ZONE             NOT NULL,
-    item_id      BIGINT,
     CONSTRAINT pk_item_request PRIMARY KEY (id),
     CONSTRAINT FK_ITEM_REQUEST_ON_REQUESTER FOREIGN KEY (requester_id) REFERENCES users (id)
     );

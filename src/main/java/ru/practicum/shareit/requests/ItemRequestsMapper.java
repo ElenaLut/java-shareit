@@ -3,6 +3,8 @@ package ru.practicum.shareit.requests;
 import ru.practicum.shareit.requests.dto.ItemRequestDto;
 import ru.practicum.shareit.requests.model.ItemRequest;
 
+import java.util.ArrayList;
+
 public class ItemRequestsMapper {
 
     public static ItemRequestDto toItemRequestDto(ItemRequest itemRequest) {
@@ -10,7 +12,8 @@ public class ItemRequestsMapper {
                 .id(itemRequest.getId())
                 .description(itemRequest.getDescription())
                 .requester(itemRequest.getRequester().getId())
-                .createdAt(itemRequest.getCreatedAt())
+                .created(itemRequest.getCreatedAt())
+                .items(new ArrayList<>())
                 .build();
     }
 
@@ -18,8 +21,7 @@ public class ItemRequestsMapper {
         return ItemRequest.builder()
                 .id(itemRequestDto.getId())
                 .description(itemRequestDto.getDescription())
-                .requester(null)
-                .createdAt(itemRequestDto.getCreatedAt())
+                .createdAt(itemRequestDto.getCreated())
                 .build();
     }
 }

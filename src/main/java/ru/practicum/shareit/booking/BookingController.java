@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,6 +16,9 @@ import java.util.stream.Collectors;
 public class BookingController {
 
     private static final String USER_IN_HEADER = "X-Sharer-User-Id";
+    private static final String DEFAULT_VALUE_FROM = "0";
+    private static final String DEFAULT_VALUE_SIZE = "10";
+    private static final String DEFAULT_VALUE_STATE = "ALL";
 
     private final BookingService service;
 
@@ -38,18 +43,24 @@ public class BookingController {
     }
 
     @GetMapping
-    public List<BookingDto> getAllBookingsByUserId(@RequestHeader(USER_IN_HEADER) Long userId,
-                                                   @RequestParam(defaultValue = "ALL") String state) {
-        return service.getAllBookingsByUserId(userId, state)
+    public List<BookingDto> getAllBookingsByUserId(@RequestParam(value = "from", defaultValue = DEFAULT_VALUE_FROM)
+                                                   @PositiveOrZero int fromLine,
+                                                   @RequestParam(defaultValue = DEFAULT_VALUE_SIZE) @Positive int size,
+                                                   @RequestHeader(USER_IN_HEADER) Long userId,
+                                                   @RequestParam(defaultValue = DEFAULT_VALUE_STATE) String state) {
+        return service.getAllBookingsByUserId(fromLine, size, userId, state)
                 .stream()
                 .map(BookingMapper::toBookingDto)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/owner")
-    public List<BookingDto> findAllByOwner(@RequestHeader(USER_IN_HEADER) Long userId,
-                                           @RequestParam(defaultValue = "ALL") String state) {
-        return service.getAllBookingsByOwnerId(userId, state)
+    public List<BookingDto> findAllByOwner(@RequestParam(value = "from", defaultValue = DEFAULT_VALUE_FROM)
+                                           @PositiveOrZero int fromLine,
+                                           @RequestParam(defaultValue = DEFAULT_VALUE_SIZE) @Positive int size,
+                                           @RequestHeader(USER_IN_HEADER) Long userId,
+                                           @RequestParam(defaultValue = DEFAULT_VALUE_STATE) String state) {
+        return service.getAllBookingsByOwnerId(fromLine, size, userId, state)
                 .stream()
                 .map(BookingMapper::toBookingDto)
                 .collect(Collectors.toList());

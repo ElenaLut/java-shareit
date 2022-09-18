@@ -17,11 +17,9 @@ public interface ItemService {
 
     List<Comment> getCommentsByItem(Long itemId);
 
-    List<Item> getAllItemsByUser(Long userId);
+    List<ItemDto> getAllItemsDtoByUser(int fromLine, int size, Long userId) ;
 
-    List<ItemDto> getAllItemsDtoByUser(Long userId);
-
-    List<Item> searchItemsByDescription(String text);
+    List<ItemDto> searchItemsByDescription(int fromLine, int size, String text);
 
     Comment addComment(Long userId, Long itemId, Comment comment);
 }

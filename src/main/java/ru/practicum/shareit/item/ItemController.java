@@ -8,14 +8,17 @@ import ru.practicum.shareit.booking.model.Comment;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/items")
 public class ItemController {
 
     private static final String USER_IN_HEADER = "X-Sharer-User-Id";
+    private static final String DEFAULT_VALUE_FROM = "0";
+    private static final String DEFAULT_VALUE_SIZE = "10";
 
     private final ItemService service;
 
@@ -47,16 +50,19 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> getAllItemsByUser(@RequestHeader(USER_IN_HEADER) Long userId) {
-        return service.getAllItemsDtoByUser(userId);
+    public List<ItemDto> getAllItemsByUser(@RequestParam(value = "from", defaultValue = DEFAULT_VALUE_FROM, required = false)
+                                               @PositiveOrZero int fromLine,
+                                           @RequestParam(defaultValue = DEFAULT_VALUE_SIZE, required = false) @Positive int size,
+                                           @RequestHeader(USER_IN_HEADER) Long userId) {
+        return service.getAllItemsDtoByUser(fromLine, size, userId);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItemsByDescription(@RequestParam(name = "text") String text) {
-        return service.searchItemsByDescription(text)
-                .stream()
-                .map(ItemMapper::toItemDto)
-                .collect(Collectors.toList());
+    public List<ItemDto> searchItemsByDescription(@RequestParam(value = "from", defaultValue = DEFAULT_VALUE_FROM, required = false)
+                                                      @PositiveOrZero int fromLine,
+                                                  @RequestParam(defaultValue = DEFAULT_VALUE_SIZE, required = false) @Positive int size,
+                                                  @RequestParam(name = "text") String text) {
+        return service.searchItemsByDescription(fromLine, size, text);
     }
 
     @PostMapping("/{itemId}/comment")

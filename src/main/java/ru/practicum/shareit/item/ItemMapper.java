@@ -19,6 +19,7 @@ public class ItemMapper {
                         .id(item.getOwner().getId())
                         .name(item.getOwner().getName())
                         .build())
+                .requestId(item.getRequestId())
                 .build();
     }
 
@@ -28,6 +29,7 @@ public class ItemMapper {
                 .name(itemDto.getName())
                 .description(itemDto.getDescription())
                 .available(itemDto.getAvailable())
+                .requestId(itemDto.getRequestId())
                 .build();
     }
 }
