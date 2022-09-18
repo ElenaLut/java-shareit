@@ -1,12 +1,14 @@
 package ru.practicum.shareit.item;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.CommentRepository;
@@ -22,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@SpringBootTest
 @ExtendWith(MockitoExtension.class)
 public class ItemServiceTest {
 
@@ -40,6 +43,11 @@ public class ItemServiceTest {
     private final User user = new User(1L, "name", "user@user.ru");
     private final Item item = new Item(1L, "name", "description", true, user, 1L, null);
     private final Comment comment = new Comment(null, "comment", null, user, LocalDateTime.MIN);
+
+    @BeforeEach
+    void beforeEach() {
+        itemService = new ItemServiceImpl(itemRepository, userService, commentRepository, bookingRepository);
+    }
 
     @Test
     void createItemTest() {

@@ -1,18 +1,21 @@
 package ru.practicum.shareit.user;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 import java.util.Optional;
 
+@SpringBootTest
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
 
@@ -23,6 +26,11 @@ public class UserServiceTest {
     UserServiceImpl userService;
 
     private final User user = new User(1L, "name", "user@user.ru");
+
+    @BeforeEach
+    void beforeEach() {
+        userService = new UserServiceImpl(userRepository);
+    }
 
     @Test
     void createUserTest() {

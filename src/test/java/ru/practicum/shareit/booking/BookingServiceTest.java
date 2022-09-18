@@ -1,12 +1,14 @@
 package ru.practicum.shareit.booking;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@SpringBootTest
 @ExtendWith(MockitoExtension.class)
 public class BookingServiceTest {
 
@@ -45,6 +48,11 @@ public class BookingServiceTest {
             LocalDateTime.of(2022, 11, 3, 15, 0), null, null, null);
     private final Booking bookingApproved = new Booking(1L, LocalDateTime.of(2022, 11, 1, 9, 0),
             LocalDateTime.of(2022, 11, 3, 15, 0), item1, user1, Status.APPROVED);
+
+    @BeforeEach
+    void beforeEach() {
+        bookingService = new BookingServiceImpl(bookingRepository, itemService, userService);
+    }
 
     @Test
     void createBookingTest() {

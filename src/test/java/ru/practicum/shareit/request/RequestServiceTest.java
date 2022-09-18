@@ -1,12 +1,14 @@
 package ru.practicum.shareit.request;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import ru.practicum.shareit.exception.NotFoundException;
@@ -23,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+@SpringBootTest
 @ExtendWith(MockitoExtension.class)
 public class RequestServiceTest {
 
@@ -38,6 +41,11 @@ public class RequestServiceTest {
 
     private final User user = new User(1, "user", "user@user.ru");
     private final ItemRequest request = new ItemRequest(1L, "description", user, LocalDateTime.now());
+
+    @BeforeEach
+    void beforeEach() {
+        itemRequestService = new ItemRequestServiceImpl(itemRequestRepository, userService, itemRepository);
+    }
 
     @Test
     void saveRequestTest() {
@@ -56,7 +64,7 @@ public class RequestServiceTest {
 
     @Test
     void getRequestByIdTest() {
-        Mockito.when(itemRequestRepository.findById(1L)).thenReturn(Optional.of(request));
+        Mockito.when(itemRequestRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(request));
         ItemRequest result = itemRequestService.getRequestById(1L);
         Assertions.assertNotNull(result);
         Assertions.assertEquals(request, result);
@@ -64,7 +72,6 @@ public class RequestServiceTest {
 
     @Test
     void getRequestByIncorrectIdTest() {
-        Mockito.when(itemRequestRepository.findById(2L)).thenReturn(Optional.empty());
         Assertions.assertThrows(NotFoundException.class, () -> itemRequestService.getRequestById(2L));
     }
 
