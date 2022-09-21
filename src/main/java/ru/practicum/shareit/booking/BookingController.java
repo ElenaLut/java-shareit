@@ -9,7 +9,6 @@ import ru.practicum.shareit.booking.model.Booking;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Validated
 @RestController
