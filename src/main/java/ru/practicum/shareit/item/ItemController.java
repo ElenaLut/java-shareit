@@ -1,6 +1,8 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.CommentMapper;
 import ru.practicum.shareit.booking.dto.CommentDto;
@@ -8,10 +10,12 @@ import ru.practicum.shareit.booking.model.Comment;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
+@Validated
 @RestController
 @RequestMapping("/items")
 public class ItemController {
@@ -65,8 +69,9 @@ public class ItemController {
         return service.searchItemsByDescription(fromLine, size, text);
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
     @PostMapping("/{itemId}/comment")
-    public CommentDto saveComment(@RequestBody CommentDto commentDto,
+    public CommentDto saveComment(@RequestBody @Valid CommentDto commentDto,
                                   @RequestHeader(name = USER_IN_HEADER) Long userId,
                                   @PathVariable Long itemId) {
         Comment comment = CommentMapper.toComment(commentDto);

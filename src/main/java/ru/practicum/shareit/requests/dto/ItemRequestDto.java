@@ -17,15 +17,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ItemRequestDto {
-    @NotNull
+
     @Positive
     private long id;
 
-    @NotNull
     @NotBlank
     private String description;
 
-    @NotNull
     @Positive
     private long requester;
 

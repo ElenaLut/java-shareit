@@ -1,6 +1,7 @@
 package ru.practicum.shareit.requests;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exception.IncorrectRequestException;
 import ru.practicum.shareit.requests.dto.ItemRequestDto;
@@ -10,6 +11,7 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/requests")

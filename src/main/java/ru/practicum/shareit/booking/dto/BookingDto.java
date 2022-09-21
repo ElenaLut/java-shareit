@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.booking.model.Status;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.model.User;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
@@ -17,7 +15,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookingDto {
-    @NotNull
     @Positive
     private long id;
 
@@ -28,14 +25,27 @@ public class BookingDto {
     private LocalDateTime end;
     private Item item;
 
-    @NotNull
     @Positive
     private long itemId;
 
     @NotNull
     @Positive
-    private User booker;
+    private Booker booker;
 
     @NotNull
     private Status status;
+
+    @Data
+    @Builder
+    public static class Booker {
+        private final long id;
+        private final String name;
+    }
+
+    @Data
+    @Builder
+    public static class Item {
+        private final long id;
+        private final String name;
+    }
 }

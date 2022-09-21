@@ -19,6 +19,9 @@ import ru.practicum.shareit.user.model.User;
 import java.util.List;
 import java.util.Optional;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -53,7 +56,9 @@ public class UserServiceTest {
         Mockito.when(userRepository.save(updateUser)).thenReturn(updateUser);
         User result = userService.updateUser(1L, updateUser);
         Assertions.assertNotNull(result);
-        Assertions.assertEquals(updateUser, result);
+        assertThat(user.getId(), equalTo(updateUser.getId()));
+        assertThat(user.getName(), equalTo(updateUser.getName()));
+        assertThat(user.getEmail(), equalTo(updateUser.getEmail()));
     }
 
     @Test

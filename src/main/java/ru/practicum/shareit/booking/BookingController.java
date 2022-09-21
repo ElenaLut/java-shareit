@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
@@ -10,6 +11,7 @@ import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Validated
 @RestController
 @RequestMapping(path = "/bookings")
 @RequiredArgsConstructor
@@ -48,10 +50,7 @@ public class BookingController {
                                                    @RequestParam(defaultValue = DEFAULT_VALUE_SIZE) @Positive int size,
                                                    @RequestHeader(USER_IN_HEADER) Long userId,
                                                    @RequestParam(defaultValue = DEFAULT_VALUE_STATE) String state) {
-        return service.getAllBookingsByUserId(fromLine, size, userId, state)
-                .stream()
-                .map(BookingMapper::toBookingDto)
-                .collect(Collectors.toList());
+        return BookingMapper.toBookingDtoList(service.getAllBookingsByUserId(fromLine, size, userId, state));
     }
 
     @GetMapping("/owner")
@@ -60,9 +59,6 @@ public class BookingController {
                                            @RequestParam(defaultValue = DEFAULT_VALUE_SIZE) @Positive int size,
                                            @RequestHeader(USER_IN_HEADER) Long userId,
                                            @RequestParam(defaultValue = DEFAULT_VALUE_STATE) String state) {
-        return service.getAllBookingsByOwnerId(fromLine, size, userId, state)
-                .stream()
-                .map(BookingMapper::toBookingDto)
-                .collect(Collectors.toList());
+        return BookingMapper.toBookingDtoList(service.getAllBookingsByOwnerId(fromLine, size, userId, state));
     }
 }

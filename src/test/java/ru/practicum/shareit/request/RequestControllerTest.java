@@ -31,7 +31,6 @@ public class RequestControllerTest {
 
     @MockBean
     private ItemRequestService itemRequestService;
-    @Autowired
     private ObjectMapper mapper = new ObjectMapper();
     @Autowired
     private MockMvc mockMvc;

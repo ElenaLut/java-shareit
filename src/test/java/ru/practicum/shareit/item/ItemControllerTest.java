@@ -18,9 +18,9 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -30,7 +30,6 @@ public class ItemControllerTest {
 
     @MockBean
     private ItemService itemService;
-    @Autowired
     private ObjectMapper mapper = new ObjectMapper();
     @Autowired
     private MockMvc mockMvc;
@@ -41,7 +40,7 @@ public class ItemControllerTest {
     private final User user2 = new User(2L, "name2", "user2@user.ru");
     private final Item item = new Item(1L, "name", "description", true, user1, 1L, null);
     private final ItemDto itemDto = new ItemDto(1L, "name", "description", true, null, null, null, null, null);
-    private final Comment comment = new Comment(1L, "comment", item, user2, LocalDateTime.MIN);
+    private final Comment comment = new Comment(1L, "comment", item, user2, null);
 
     @BeforeEach
     void beforeEach(WebApplicationContext wac) {
@@ -52,7 +51,7 @@ public class ItemControllerTest {
 
     @Test
     void createItemTest() throws Exception {
-        Mockito.when(itemService.createItem(Mockito.any(Item.class), Mockito.anyLong())).thenReturn(item);
+        Mockito.when(itemService.createItem(any(Item.class), anyLong())).thenReturn(item);
         mockMvc.perform(post("/items")
                         .header(USER_IN_HEADER, 1L)
                         .content(mapper.writeValueAsString(itemDto))
@@ -67,7 +66,7 @@ public class ItemControllerTest {
 
     @Test
     void updateItemTest() throws Exception {
-        Mockito.when(itemService.updateItem(Mockito.any(Item.class), Mockito.anyLong()))
+        Mockito.when(itemService.updateItem(any(Item.class), anyLong()))
                 .thenReturn(item);
         mockMvc.perform(patch("/items/1")
                         .header(USER_IN_HEADER, 1L)
@@ -79,7 +78,7 @@ public class ItemControllerTest {
 
     @Test
     void updateItemWithIncorrectUserTest() throws Exception {
-        Mockito.when(itemService.updateItem(Mockito.any(Item.class), Mockito.anyLong()))
+        Mockito.when(itemService.updateItem(any(Item.class), anyLong()))
                 .thenThrow(NotFoundException.class);
         mockMvc.perform(patch("/items/1")
                         .header(USER_IN_HEADER, 1L)
@@ -91,7 +90,7 @@ public class ItemControllerTest {
 
     @Test
     void getItemByIdTest() throws Exception {
-        Mockito.when(itemService.getItemDtoById(Mockito.anyLong(), Mockito.anyLong())).thenReturn(itemDto);
+        Mockito.when(itemService.getItemDtoById(anyLong(), anyLong())).thenReturn(itemDto);
         mockMvc.perform(get("/items/1")
                         .header(USER_IN_HEADER, 1L)
                         .accept(MediaType.APPLICATION_JSON))
@@ -104,7 +103,7 @@ public class ItemControllerTest {
 
     @Test
     void getItemByWrongIdTest() throws Exception {
-        Mockito.when(itemService.getItemDtoById(Mockito.anyLong(), Mockito.anyLong())).thenThrow(NotFoundException.class);
+        Mockito.when(itemService.getItemDtoById(anyLong(), anyLong())).thenThrow(NotFoundException.class);
         mockMvc.perform(get("/items/1")
                         .header(USER_IN_HEADER, 1L)
                         .accept(MediaType.APPLICATION_JSON))

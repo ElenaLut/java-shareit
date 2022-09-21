@@ -20,22 +20,18 @@ import java.util.Optional;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ItemDto {
-    @NotNull
+
     @Positive
     private long id;
 
-    @NotNull
     @NotBlank
     private String name;
 
-    @NotNull
     @NotBlank
     private String description;
 
     @NotNull
     private Boolean available;
-
-    @JsonIgnore
     private User owner;
     private Long requestId;
     private BookingShortDto lastBooking;

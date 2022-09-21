@@ -72,7 +72,7 @@ public class ItemServiceImpl implements ItemService {
             oldItem.setAvailable(item.getAvailable());
         }
         log.info("Вещь с id {} обновлена", item.getId());
-        return itemRepository.save(oldItem);
+        return oldItem;
     }
 
     @Override

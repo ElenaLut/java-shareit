@@ -45,7 +45,7 @@ public class RequestServiceTest {
     @InjectMocks
     private ItemRequestServiceImpl itemRequestService;
 
-    private final User user = new User(1, "user", "user@user.ru");
+    private final User user = new User(1L, "user", "user@user.ru");
     private final ItemRequest request = new ItemRequest(1L, "description", user, LocalDateTime.now());
 
     @BeforeEach

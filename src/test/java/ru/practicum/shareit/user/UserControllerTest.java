@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
 import java.nio.charset.StandardCharsets;
@@ -28,10 +29,11 @@ public class UserControllerTest {
     @MockBean
     private UserService userService;
     @Autowired
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper;
     @Autowired
     private MockMvc mockMvc;
     private final User user = new User(1L, "name", "user@user.ru");
+    private final UserDto userDto = new UserDto(1L, "name", "user@user.ru");
 
     @BeforeEach
     void beforeEach(WebApplicationContext wac) {
@@ -42,9 +44,9 @@ public class UserControllerTest {
 
     @Test
     void createUserTest() throws Exception {
-        Mockito.when(userService.createUser(user)).thenReturn(user);
+        Mockito.when(userService.createUser(Mockito.any(User.class))).thenReturn(user);
         mockMvc.perform(post("/users")
-                        .content(mapper.writeValueAsString(user))
+                        .content(mapper.writeValueAsString(userDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -56,9 +58,9 @@ public class UserControllerTest {
 
     @Test
     void updateUserTest() throws Exception {
-        Mockito.when(userService.updateUser(1L, user)).thenReturn(user);
+        Mockito.when(userService.updateUser(Mockito.anyLong(), Mockito.any(User.class))).thenReturn(user);
         mockMvc.perform(patch("/users/1")
-                        .content(mapper.writeValueAsString(user))
+                        .content(mapper.writeValueAsString(userDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -70,9 +72,9 @@ public class UserControllerTest {
 
     @Test
     void updateUserIncorrectIdTest() throws Exception {
-        Mockito.when(userService.updateUser(1L, user)).thenThrow(NotFoundException.class);
+        Mockito.when(userService.updateUser(Mockito.anyLong(), Mockito.any(User.class))).thenThrow(NotFoundException.class);
         mockMvc.perform(patch("/users/1")
-                        .content(mapper.writeValueAsString(user))
+                        .content(mapper.writeValueAsString(userDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))

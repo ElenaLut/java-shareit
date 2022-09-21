@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService {
         if (updateUser.getName() != null) {
             user.setName(updateUser.getName());
         }
-        return userRepository.save(user);
+        return user;
     }
 
     @Override

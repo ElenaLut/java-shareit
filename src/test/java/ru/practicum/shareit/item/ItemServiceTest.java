@@ -28,6 +28,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -48,7 +51,7 @@ public class ItemServiceTest {
 
     private final User user = new User(1L, "name", "user@user.ru");
     private final Item item = new Item(1L, "name", "description", true, user, 1L, null);
-    private final Comment comment = new Comment(null, "comment", null, user, LocalDateTime.MIN);
+    private final Comment comment = new Comment(1L, "comment", null, user, LocalDateTime.MIN);
 
     @BeforeEach
     void beforeEach() {
@@ -72,7 +75,12 @@ public class ItemServiceTest {
         Mockito.when(itemRepository.save(itemUpdate)).thenReturn(itemUpdate);
         Item result = itemService.updateItem(itemUpdate, 1L);
         Assertions.assertNotNull(result);
-        Assertions.assertEquals(itemUpdate, result);
+        assertThat(itemUpdate.getId(), equalTo(result.getId()));
+        assertThat(itemUpdate.getName(), equalTo(result.getName()));
+        assertThat(itemUpdate.getDescription(), equalTo(item.getDescription()));
+        assertThat(itemUpdate.getAvailable(), equalTo(item.getAvailable()));
+        assertThat(itemUpdate.getOwner(), equalTo(item.getOwner()));
+        assertThat(itemUpdate.getRequestId(), equalTo(item.getRequestId()));
     }
 
     @Test
@@ -103,7 +111,12 @@ public class ItemServiceTest {
         Item result = ItemMapper.toItem(itemService.getItemDtoById(1L, 1L));
         result.setOwner(user);
         Assertions.assertNotNull(result);
-        Assertions.assertEquals(item, result);
+        assertThat(item.getId(), equalTo(result.getId()));
+        assertThat(item.getName(), equalTo(result.getName()));
+        assertThat(item.getDescription(), equalTo(item.getDescription()));
+        assertThat(item.getAvailable(), equalTo(item.getAvailable()));
+        assertThat(item.getOwner(), equalTo(item.getOwner()));
+        assertThat(item.getRequestId(), equalTo(item.getRequestId()));
     }
 
     @Test
@@ -137,6 +150,9 @@ public class ItemServiceTest {
                 .stream().map(ItemMapper::toItem).collect(Collectors.toList());
         Assertions.assertNotNull(itemList);
         Assertions.assertEquals(1, itemList.size());
-        Assertions.assertEquals(itemForSearch, itemList.get(0));
+        assertThat(itemForSearch.getId(), equalTo(itemList.get(0).getId()));
+        assertThat(itemForSearch.getName(), equalTo(itemList.get(0).getName()));
+        assertThat(itemForSearch.getAvailable(), equalTo(itemList.get(0).getAvailable()));
+        assertThat(itemForSearch.getDescription(), equalTo(itemList.get(0).getDescription()));
     }
 }
