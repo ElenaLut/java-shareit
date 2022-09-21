@@ -1,18 +1,28 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.booking.CommentMapper;
+import ru.practicum.shareit.booking.dto.CommentDto;
+import ru.practicum.shareit.booking.model.Comment;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
-import java.util.stream.Collectors;
 
+@Validated
 @RestController
 @RequestMapping("/items")
 public class ItemController {
 
-    private static final String USER_ID_IN_HEADER = "X-Sharer-User-Id";
+    private static final String USER_IN_HEADER = "X-Sharer-User-Id";
+    private static final String DEFAULT_VALUE_FROM = "0";
+    private static final String DEFAULT_VALUE_SIZE = "10";
 
     private final ItemService service;
 
@@ -23,37 +33,48 @@ public class ItemController {
 
     @PostMapping
     public ItemDto createItem(@RequestBody ItemDto itemDto,
-                              @RequestHeader(name = USER_ID_IN_HEADER) Long userId) {
+                              @RequestHeader(name = USER_IN_HEADER) Long userId) {
         Item item = ItemMapper.toItem(itemDto);
         return ItemMapper.toItemDto(service.createItem(item, userId));
     }
 
     @PatchMapping("/{itemId}")
     public ItemDto updateItem(@PathVariable Long itemId,
-                              @RequestHeader(name = USER_ID_IN_HEADER) Long userId,
+                              @RequestHeader(name = USER_IN_HEADER) Long userId,
                               @RequestBody ItemDto itemDto) {
+        itemDto.setId(itemId);
         Item newItem = ItemMapper.toItem(itemDto);
-        return ItemMapper.toItemDto(service.updateItem(newItem, userId, itemId));
+        return ItemMapper.toItemDto(service.updateItem(newItem, userId));
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getItemById(@PathVariable("itemId") Long itemId) {
-        return ItemMapper.toItemDto(service.getItemById(itemId));
+    public ItemDto getItemById(@RequestHeader(USER_IN_HEADER) Long userId,
+                               @PathVariable("itemId") Long itemId) {
+        return service.getItemDtoById(itemId, userId);
     }
 
     @GetMapping
-    public List<ItemDto> getAllItemsByUser(@RequestHeader(USER_ID_IN_HEADER) Long userId) {
-        return service.getAllItemsByUser(userId)
-                .stream()
-                .map(ItemMapper::toItemDto)
-                .collect(Collectors.toList());
+    public List<ItemDto> getAllItemsByUser(@RequestParam(value = "from", defaultValue = DEFAULT_VALUE_FROM, required = false)
+                                               @PositiveOrZero int fromLine,
+                                           @RequestParam(defaultValue = DEFAULT_VALUE_SIZE, required = false) @Positive int size,
+                                           @RequestHeader(USER_IN_HEADER) Long userId) {
+        return service.getAllItemsDtoByUser(fromLine, size, userId);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItemsByDescription(@RequestParam(name = "text") String text) {
-        return service.searchItemsByDescription(text)
-                .stream()
-                .map(ItemMapper::toItemDto)
-                .collect(Collectors.toList());
+    public List<ItemDto> searchItemsByDescription(@RequestParam(value = "from", defaultValue = DEFAULT_VALUE_FROM, required = false)
+                                                      @PositiveOrZero int fromLine,
+                                                  @RequestParam(defaultValue = DEFAULT_VALUE_SIZE, required = false) @Positive int size,
+                                                  @RequestParam(name = "text") String text) {
+        return service.searchItemsByDescription(fromLine, size, text);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @PostMapping("/{itemId}/comment")
+    public CommentDto saveComment(@RequestBody @Valid CommentDto commentDto,
+                                  @RequestHeader(name = USER_IN_HEADER) Long userId,
+                                  @PathVariable Long itemId) {
+        Comment comment = CommentMapper.toComment(commentDto);
+        return CommentMapper.toCommentDto(service.addComment(userId, itemId, comment));
     }
 }
