@@ -43,18 +43,18 @@ public class UserServiceImpl implements UserService {
     public User updateUser(Long userId, User updateUser) {
         User user = getUserById(userId);
         if (updateUser.getEmail() != null && user.getEmail().contains("@")) {
+            for (User userFindEmail : getAllUsers()) {
+                if (userFindEmail.getEmail().equals(updateUser.getEmail())) {
+                    log.error("Пользователь с таким email {} уже существует.", updateUser.getEmail());
+                    throw new ConflictingException("Пользователь с таким email уже существует");
+                }
+            }
             user.setEmail(updateUser.getEmail());
         }
         if (updateUser.getName() != null) {
             user.setName(updateUser.getName());
         }
-        try {
-            return userRepository.save(user);
-        } catch (ConflictingException e) {
-            log.error("Пользователь с таким email {} уже существует.", updateUser.getEmail());
-            throw new ConflictingException(String.format("Пользователь с таким email %s уже существует.",
-                    updateUser.getEmail()));
-        }
+        return userRepository.save(user);
     }
 
     @Override
