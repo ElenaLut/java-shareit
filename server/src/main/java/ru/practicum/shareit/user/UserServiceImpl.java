@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
         }
         try {
             return userRepository.save(user);
-        } catch (DataIntegrityViolationException e) {
+        } catch (ConflictingException e) {
             log.error("Пользователь с таким email {} уже существует.", updateUser.getEmail());
             throw new ConflictingException(String.format("Пользователь с таким email %s уже существует.",
                     updateUser.getEmail()));
