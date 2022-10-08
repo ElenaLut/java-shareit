@@ -1,7 +1,6 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.CommentMapper;
@@ -10,12 +9,8 @@ import ru.practicum.shareit.booking.model.Comment;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
-@Validated
 @RestController
 @RequestMapping("/items")
 public class ItemController {
@@ -55,23 +50,23 @@ public class ItemController {
 
     @GetMapping
     public List<ItemDto> getAllItemsByUser(@RequestParam(value = "from", defaultValue = DEFAULT_VALUE_FROM, required = false)
-                                               @PositiveOrZero int fromLine,
-                                           @RequestParam(defaultValue = DEFAULT_VALUE_SIZE, required = false) @Positive int size,
+                                           int fromLine,
+                                           @RequestParam(defaultValue = DEFAULT_VALUE_SIZE, required = false) int size,
                                            @RequestHeader(USER_IN_HEADER) Long userId) {
         return service.getAllItemsDtoByUser(fromLine, size, userId);
     }
 
     @GetMapping("/search")
     public List<ItemDto> searchItemsByDescription(@RequestParam(value = "from", defaultValue = DEFAULT_VALUE_FROM, required = false)
-                                                      @PositiveOrZero int fromLine,
-                                                  @RequestParam(defaultValue = DEFAULT_VALUE_SIZE, required = false) @Positive int size,
+                                                  int fromLine,
+                                                  @RequestParam(defaultValue = DEFAULT_VALUE_SIZE, required = false) int size,
                                                   @RequestParam(name = "text") String text) {
         return service.searchItemsByDescription(fromLine, size, text);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @PostMapping("/{itemId}/comment")
-    public CommentDto saveComment(@RequestBody @Valid CommentDto commentDto,
+    public CommentDto saveComment(@RequestBody CommentDto commentDto,
                                   @RequestHeader(name = USER_IN_HEADER) Long userId,
                                   @PathVariable Long itemId) {
         Comment comment = CommentMapper.toComment(commentDto);

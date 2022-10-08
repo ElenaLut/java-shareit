@@ -8,9 +8,6 @@ import ru.practicum.shareit.booking.dto.CommentDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.user.model.User;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,16 +17,9 @@ import java.util.Optional;
 @AllArgsConstructor
 public class ItemDto {
 
-    @Positive
     private long id;
-
-    @NotBlank
     private String name;
-
-    @NotBlank
     private String description;
-
-    @NotNull
     private Boolean available;
     private User owner;
     private Long requestId;

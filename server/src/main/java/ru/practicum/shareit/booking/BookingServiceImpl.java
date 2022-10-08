@@ -50,11 +50,6 @@ public class BookingServiceImpl implements BookingService {
             log.error("Вещь с id {} недоступна", itemId);
             throw new IncorrectRequestException("Вещь недоступна");
         }
-        if (booking.getStart().isBefore(LocalDateTime.now()) || booking.getEnd().isBefore(booking.getStart())
-                || booking.getEnd().isBefore(LocalDateTime.now())) {
-            log.error("В указанный период вещь недоступна");
-            throw new IncorrectRequestException("Некорректные даты бронирования");
-        }
         booking.setItem(item);
         booking.setBooker(user);
         booking.setStatus(Status.WAITING);

@@ -1,17 +1,13 @@
 package ru.practicum.shareit.requests;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exception.IncorrectRequestException;
 import ru.practicum.shareit.requests.dto.ItemRequestDto;
 import ru.practicum.shareit.requests.model.ItemRequest;
 
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
-@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/requests")
@@ -46,9 +42,9 @@ public class ItemRequestController {
 
     @GetMapping("/all")
     public List<ItemRequestDto> getAll(@RequestParam(defaultValue = DEFAULT_VALUE_FROM, value = "from", required = false)
-                                       @PositiveOrZero int fromList,
+                                       int fromList,
                                        @RequestParam(defaultValue = DEFAULT_VALUE_SIZE, required = false)
-                                       @Positive int size,
+                                       int size,
                                        @RequestHeader(USER_IN_HEADER) Long userId) {
         return itemRequestService.getAllRequests(fromList, size, userId);
     }
