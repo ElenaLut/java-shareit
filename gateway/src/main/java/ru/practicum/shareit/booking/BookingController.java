@@ -13,7 +13,6 @@ import ru.practicum.shareit.exception.IncorrectRequestException;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
-import java.time.LocalDateTime;
 
 @Slf4j
 @Validated
@@ -33,9 +32,8 @@ public class BookingController {
     public ResponseEntity<Object> createBooking(@RequestBody @Valid BookItemRequestDto bookingDto,
                                                 @RequestHeader(name = USER_IN_HEADER) Long userId) {
         log.info("Запрос на создание бронирования {}, пользователем с id {}", bookingDto, userId);
-        if (bookingDto.getStart().isBefore(LocalDateTime.now()) || bookingDto.getEnd().isBefore(bookingDto.getStart())
-                || bookingDto.getEnd().isBefore(LocalDateTime.now())) {
-            log.error("В указанный период вещь недоступна");
+        if (!bookingDto.getStart().isBefore(bookingDto.getEnd())) {
+            log.error("Дата окончания раньше даты старта бронирования");
             throw new IncorrectRequestException("Некорректные даты бронирования");
         }
         return bookingClient.addBookingItem(userId, bookingDto);
